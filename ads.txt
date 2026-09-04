@@ -1,0 +1,3 @@
+# Add your AdSense publisher ID in place of REPLACE_WITH_YOUR_PUBID
+
+google.com, pub-REPLACE_WITH_YOUR_PUBID, DIRECT, f08c47fec0942fa0

@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google Tag Manager -->
+    <!-- Google Tag Manager - replace GTM-XXXX with your container ID -->
     <script>
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
     </script>
-    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXX"></scottie2hottie96>
+    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXX"></script>
     <!-- End Google Tag Manager -->
-    
+
+    <!-- Google AdSense - replace ca-pub-REPLACE_WITH_YOUR_PUBID with your publisher ID -->
+    <!-- Insert your real publisher id (format: ca-pub-1234567890123456) before going live -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-REPLACE_WITH_YOUR_PUBID" crossorigin="anonymous"></script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Interactive Quiz App</title>
@@ -46,6 +50,10 @@
         .btn:hover {
             background-color: #0056b3;
         }
+        /* Responsive ad slot spacing */
+        .ad-slot {
+            margin: 16px 0;
+        }
     </style>
 </head>
 <body>
@@ -59,58 +67,79 @@
     <div class="quiz-container" role="main" aria-labelledby="question">
         <h1 id="question">Welcome to the Quiz!</h1>
         <p id="description">Click the button below to start tracking your interactions via Google Tag Manager.</p>
-        <button id="quiz-btn" class="btn" aria-describedby="description">Start Quiz</button>
+
+        <!-- Example AdSense ad unit: replace data-ad-client and data-ad-slot with your values -->
+        <div class="ad-slot" aria-hidden="true">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-REPLACE_WITH_YOUR_PUBID"
+                 data-ad-slot="REPLACE_WITH_AD_SLOT"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <button id="quiz-btn" class="btn" type="button" aria-describedby="description">Start Quiz</button>
+
+        <!-- aria-live for announcing dynamic changes to assistive tech -->
+        <div id="sr-announcer" aria-live="polite" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;"></div>
     </div>
 
     <script>
-        // Basic placeholder functionality for quiz interactions with dataLayer pushes
-        const quizBtn = document.getElementById('quiz-btn');
-        const questionEl = document.getElementById('question');
-        const descEl = document.getElementById('description');
+        // Wrap interactive logic in DOMContentLoaded to ensure elements exist
+        document.addEventListener('DOMContentLoaded', function () {
+            const quizBtn = document.getElementById('quiz-btn');
+            const questionEl = document.getElementById('question');
+            const descEl = document.getElementById('description');
+            const srAnnouncer = document.getElementById('sr-announcer');
 
-        let currentStep = 0;
+            let currentStep = 0;
 
-        // Optional: push initial page view-ish event
-        if (window.dataLayer) {
+            // Optional: push initial page view-ish event (safe to call even if dataLayer is managed by GTM)
+            window.dataLayer = window.dataLayer || [];
             window.dataLayer.push({
                 event: 'quiz_page_view',
                 page_title: document.title,
                 page_path: location.pathname
             });
-        }
 
-        quizBtn.addEventListener('click', () => {
-            currentStep++;
+            quizBtn.addEventListener('click', function () {
+                currentStep++;
 
-            // push interaction event
-            if (window.dataLayer) {
-                window.dataLayer.push({
-                    event: 'quiz_interaction',
-                    quiz_step: currentStep,
-                    quiz_action: 'button_click',
-                    quiz_label: quizBtn.innerText
-                });
-            }
-
-            if (currentStep === 1) {
-                questionEl.innerText = "Question 1: Do you love web development?";
-                descEl.innerText = "Select your answer. Your click can be tracked as a custom trigger in GTM.";
-                quizBtn.innerText = "Yes, absolutely!";
-                quizBtn.setAttribute('aria-label', 'Answer: Yes, absolutely!');
-            } else if (currentStep === 2) {
-                questionEl.innerText = "Quiz Completed!";
-                descEl.innerText = "Thank you for participating! Check your GTM Preview Mode to see the triggers.";
-                quizBtn.style.display = 'none';
-
-                // final event
+                // push interaction event
                 if (window.dataLayer) {
                     window.dataLayer.push({
-                        event: 'quiz_completed',
-                        total_steps: currentStep,
-                        completion_time: new Date().toISOString()
+                        event: 'quiz_interaction',
+                        quiz_step: currentStep,
+                        quiz_action: 'button_click',
+                        quiz_label: quizBtn.textContent
                     });
                 }
-            }
+
+                if (currentStep === 1) {
+                    questionEl.textContent = "Question 1: Do you love web development?";
+                    descEl.textContent = "Select your answer. Your click can be tracked as a custom trigger in GTM.";
+                    quizBtn.textContent = "Yes, absolutely!";
+                    quizBtn.setAttribute('aria-label', 'Answer: Yes, absolutely!');
+
+                    srAnnouncer.textContent = 'Question 1 displayed: Do you love web development?';
+                } else if (currentStep === 2) {
+                    questionEl.textContent = "Quiz Completed!";
+                    descEl.textContent = "Thank you for participating! Check your GTM Preview Mode to see the triggers.";
+                    quizBtn.style.display = 'none';
+
+                    // final event
+                    if (window.dataLayer) {
+                        window.dataLayer.push({
+                            event: 'quiz_completed',
+                            total_steps: currentStep,
+                            completion_time: new Date().toISOString()
+                        });
+                    }
+
+                    srAnnouncer.textContent = 'Quiz completed. Thank you for participating.';
+                }
+            });
         });
     </script>
 </body>
