@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Tag Manager -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+    </script>
+    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXX"></scottie2hottie96>
+    <!-- End Google Tag Manager -->
+    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Quiz App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXX"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="quiz-container" role="main" aria-labelledby="question">
+        <h1 id="question">Welcome to the Quiz!</h1>
+        <p id="description">Click the button below to start tracking your interactions via Google Tag Manager.</p>
+        <button id="quiz-btn" class="btn" aria-describedby="description">Start Quiz</button>
+    </div>
+
+    <script>
+        // Basic placeholder functionality for quiz interactions with dataLayer pushes
+        const quizBtn = document.getElementById('quiz-btn');
+        const questionEl = document.getElementById('question');
+        const descEl = document.getElementById('description');
+
+        let currentStep = 0;
+
+        // Optional: push initial page view-ish event
+        if (window.dataLayer) {
+            window.dataLayer.push({
+                event: 'quiz_page_view',
+                page_title: document.title,
+                page_path: location.pathname
+            });
+        }
+
+        quizBtn.addEventListener('click', () => {
+            currentStep++;
+
+            // push interaction event
+            if (window.dataLayer) {
+                window.dataLayer.push({
+                    event: 'quiz_interaction',
+                    quiz_step: currentStep,
+                    quiz_action: 'button_click',
+                    quiz_label: quizBtn.innerText
+                });
+            }
+
+            if (currentStep === 1) {
+                questionEl.innerText = "Question 1: Do you love web development?";
+                descEl.innerText = "Select your answer. Your click can be tracked as a custom trigger in GTM.";
+                quizBtn.innerText = "Yes, absolutely!";
+                quizBtn.setAttribute('aria-label', 'Answer: Yes, absolutely!');
+            } else if (currentStep === 2) {
+                questionEl.innerText = "Quiz Completed!";
+                descEl.innerText = "Thank you for participating! Check your GTM Preview Mode to see the triggers.";
+                quizBtn.style.display = 'none';
+
+                // final event
+                if (window.dataLayer) {
+                    window.dataLayer.push({
+                        event: 'quiz_completed',
+                        total_steps: currentStep,
+                        completion_time: new Date().toISOString()
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
